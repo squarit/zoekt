@@ -29,7 +29,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gfleury/go-bitbucket-v1"
+	bitbucketv1 "github.com/gfleury/go-bitbucket-v1"
 
 	"github.com/google/zoekt/gitindex"
 )
@@ -45,6 +45,7 @@ func main() {
 	excludePattern := flag.String("exclude", "", "don't mirror repos whose names match this regexp.")
 	projectType := flag.String("type", "", "only clone repos whose type matches the given string. "+
 		"Type can be either NORMAl or PERSONAL. Clones projects of both types if not set.")
+	mirrorUrl := flag.String("mirror", "", "BitBucket Smart Mirror url.")
 	flag.Parse()
 
 	if *serverUrl == "" {
@@ -136,7 +137,7 @@ func main() {
 	}
 	repos = trimmed
 
-	if err := cloneRepos(destDir, rootURL.Host, repos, password); err != nil {
+	if err := cloneRepos(destDir, rootURL.Host, *mirrorUrl, repos, username, password); err != nil {
 		log.Fatalf("cloneRepos: %v", err)
 	}
 
@@ -241,7 +242,7 @@ func getProjectRepos(client bitbucketv1.APIClient, projectName string) ([]bitbuc
 	return allRepos, nil
 }
 
-func cloneRepos(destDir string, host string, repos []bitbucketv1.Repository, password string) error {
+func cloneRepos(destDir string, host, mirror string, repos []bitbucketv1.Repository, username, password string) error {
 	for _, r := range repos {
 		fullName := filepath.Join(r.Project.Key, r.Slug)
 		config := map[string]string{
@@ -250,12 +251,26 @@ func cloneRepos(destDir string, host string, repos []bitbucketv1.Repository, pas
 			"zoekt.name":         filepath.Join(host, fullName),
 		}
 
+		/* TODO: use template to derive the mirror url name. */
+		if mirror != "" {
+			u, err := url.Parse(mirror + fullName + ".git")
+			if err != nil {
+				log.Fatalf("url.Parse(): %v", err)
+			}
+			u.User = url.UserPassword(username, password)
+			config["zoekt.mirror-url"] = u.String()
+		}
+
 		httpsCloneUrl := ""
 		for _, cloneUrl := range r.Links.Clone {
 			// In fact, this is an https url, i.e. there's no separate Name for https.
 			if cloneUrl.Name == "http" {
-				s := strings.Split(cloneUrl.Href, "@")
-				httpsCloneUrl = s[0] + ":" + password + "@" + s[1]
+				u, err := url.Parse(cloneUrl.Href)
+				if err != nil {
+					log.Fatalf("url.Parse(): %v", err)
+				}
+				u.User = url.UserPassword(username, password)
+				httpsCloneUrl = u.String()
 			}
 		}
 
