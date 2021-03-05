@@ -131,7 +131,7 @@ func main() {
 
 	trimmed := repos[:0]
 	for _, r := range repos {
-		if filter.Include(r.Slug) && (*projectType == "" || r.Project.Type == *projectType) {
+		if (filter.Include(r.Slug) || filter.Include(r.Project.Key)) && (*projectType == "" || r.Project.Type == *projectType) {
 			trimmed = append(trimmed, r)
 		}
 	}
