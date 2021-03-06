@@ -141,6 +141,8 @@ func fetchGitRepo(dir string) bool {
 		log.Printf("command %s failed: %v\nOUT: %s\nERR: %s",
 			cmd.Args, err, outBuf.String(), errBuf.String())
 	} else {
+		log.Printf("command %s successful\nOUT: %s",
+			cmd.Args, outBuf.String())
 		return len(outBuf.Bytes()) != 0
 	}
 	return false
@@ -157,7 +159,7 @@ func indexPendingRepos(indexDir, repoDir string, opts *Options, repos <-chan str
 		if failures, err := filepath.Glob(filepath.Join(indexDir, "*.tmp")); err != nil {
 			log.Printf("Glob: %v", err)
 		} else {
-			for _, f  := range failures {
+			for _, f := range failures {
 				os.Remove(f)
 			}
 		}

@@ -58,6 +58,10 @@ func CloneRepo(destDir, name, cloneURL string, settings map[string]string) (stri
 		"git", "clone", "--bare", "--verbose", "--progress",
 	)
 	cmd.Args = append(cmd.Args, config...)
+
+	if mirrorURL, ok := settings["zoekt.mirror-url"]; ok {
+		cloneURL = mirrorURL
+	}
 	cmd.Args = append(cmd.Args, cloneURL, repoDest)
 
 	// Prevent prompting

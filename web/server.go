@@ -72,7 +72,7 @@ var Funcmap = template.FuncMap{
 	},
 }
 
-const defaultNumResults = 50
+const defaultNumResults = 100
 
 type Server struct {
 	Searcher zoekt.Searcher

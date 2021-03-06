@@ -23,7 +23,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -39,9 +38,11 @@ type ctagsProcess struct {
 
 func newProcess(bin string) (*ctagsProcess, error) {
 	opt := "default"
+	/*
 	if runtime.GOOS == "linux" {
 		opt = "sandbox"
 	}
+	*/
 
 	cmd := exec.Command(bin, "--_interactive="+opt, "--fields=*")
 	in, err := cmd.StdinPipe()
