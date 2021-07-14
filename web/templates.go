@@ -44,7 +44,7 @@ var TemplateText = map[string]string{
 <!-- Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE) -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <style>
-  #navsearchbox { width: 350px !important; }
+  #navsearchbox { width: 800px !important; }
   #maxhits { width: 100px !important; }
   .label-dup {
     border-width: 1px !important;
